@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import joblib
 import numpy as np
@@ -57,7 +57,6 @@ def pull_hourly_coin_data(exchange, from_date, n_candles, c_size, skip=False):
     exc_instance.load_markets()
     from_timestamp = exc_instance.parse8601(from_date)
     usdt_pairs = [symbol for symbol in exc_instance.symbols if symbol.endswith('/USDT')]
-    print(usdt_pairs)
     for symbol in usdt_pairs:
         for attempt in range(5):
             try:
