@@ -112,6 +112,13 @@ def fetch_data_from_db(crypto_table):
 
 
 def clean_data(df):
+    df['Volume'] = df['Volume'].astype(np.float32)
+    df['High'] = df['High'].astype(np.float32)
+    df['Open'] = df['Open'].astype(np.float32)
+    df['Low'] = df['Low'].astype(np.float32)
+    df['Close'] = df['Close'].astype(np.float32)
+
+    # Group by 'coin_name' and filter out rows with zero volume
     coin_volume_sums = df.groupby('coin_name')['Volume'].sum()
     coin_names_with_zero = coin_volume_sums[coin_volume_sums == 0].index.tolist()
     coin_counts = df['coin_name'].value_counts()
@@ -119,22 +126,23 @@ def clean_data(df):
 
     coin_names_with_zero = np.append(coin_names_with_zero, coin_with_missing_candle_data)
     coin_names_with_zero = np.unique(coin_names_with_zero)
-    df_filtered = df[~df['coin_name'].isin(coin_names_with_zero)]
+    df_filtered = df[~df['coin_name'].isin(coin_names_with_zero)].copy()
 
-    mean_volumes = df_filtered[df_filtered['Volume'] != 0].groupby('coin_name')['Volume'].mean()
-    df_filtered['Volume'] = df_filtered.apply(
-        lambda row: mean_volumes[row['coin_name']] if row['Volume'] == 0 else row['Volume'],
-        axis=1
-    )
+    # Replace zero volumes with the mean volume
+    non_zero_mask = df_filtered['Volume'] != 0
+    mean_volumes = df_filtered.loc[non_zero_mask].groupby('coin_name')['Volume'].transform('mean')
+    df_filtered.loc[~non_zero_mask, 'Volume'] = mean_volumes
 
+    # Calculate percentage change
     for column in ['High', 'Open', 'Low', 'Close', 'Volume']:
         df_filtered[column] = df_filtered.groupby('coin_name')[column].pct_change()
 
-    clean_df = df_filtered.drop(columns=['timestamp', 'exchange_name', '_id'])
-    clean_df.replace([np.inf, -np.inf], np.nan, inplace=True)
-    clean_df = clean_df.dropna()
+    # Clean up DataFrame
+    df_filtered.drop(columns=['timestamp', 'exchange_name', '_id'], inplace=True, errors='ignore')
+    df_filtered.replace([np.inf, -np.inf], np.nan, inplace=True)
+    df_filtered.dropna(inplace=True)
 
-    return clean_df
+    return df_filtered
 
 
 def create_feature_db_data(df):
