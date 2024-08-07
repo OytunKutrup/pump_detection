@@ -242,7 +242,12 @@ def start_detection(df_list):
             pumped_data_table.insert_many(pumped_coin_data)
 
 
+print("Hourly script started.")
 start_hourly_data_fetch(get_current_hour_date(), 1)
+print("Data update finished.")
 db_df = fetch_data_from_db(crypto_data_table)
+print("Data fetching from db finished.")
 processed_df_list = preprocess_db_data(db_df)
+print("Preprocessing finished.")
 start_detection(processed_df_list)
+print("Script finished.")
