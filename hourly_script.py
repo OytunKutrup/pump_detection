@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 import joblib
@@ -9,7 +10,9 @@ import time
 import pandas as pd
 
 config = configparser.ConfigParser()
-config.read("config.ini")
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, 'config.ini')
+config.read(config_path)
 mongo_db_username = config["mongo_db"]["username"]
 mongo_db_pass = config["mongo_db"]["password"]
 
