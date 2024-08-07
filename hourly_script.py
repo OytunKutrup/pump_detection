@@ -101,19 +101,30 @@ def get_current_hour_date():
     return formatted_datetime
 
 
+def get_current_date():
+    now = datetime.now()
+    formatted_time = now.strftime('%Y-%m-%d %H:%M:%S')
+    return formatted_time
+
+
 def start_hourly_data_fetch(from_date, c_size):
+    print(get_current_date(), "Hourly data update started.")
     exchanges = ['mexc', 'kucoin']
     for e in exchanges:
         pull_hourly_coin_data(e, from_date, c_size, '1h')
+    print(get_current_date(), "Hourly data update finished.")
 
 
 def fetch_data_from_db(crypto_table):
+    print(get_current_date(), "Data fetch started.")
     data = crypto_table.find()
     df = pd.DataFrame(list(data))
+    print(get_current_date(), "Data fetch finished.")
     return df
 
 
 def clean_data(df):
+    pd.set_option('mode.chained_assignment', None)
     df['Volume'] = df['Volume'].astype(np.float32)
     df['High'] = df['High'].astype(np.float32)
     df['Open'] = df['Open'].astype(np.float32)
@@ -202,6 +213,7 @@ def create_feature_db_data(df):
 
 
 def preprocess_db_data(df):
+    print(get_current_date(), "Data preprocess started.")
     df.rename(columns={'coinName': 'coin_name', 'open': 'Open', 'close': 'Close', 'high': 'High', 'low': 'Low',
                        'volume': 'Volume', 'exchange': 'exchange_name'}, inplace=True)
     mexc_data = df[df['exchange_name'] == 'mexc']
@@ -214,10 +226,12 @@ def preprocess_db_data(df):
     kucoin_data = create_feature_db_data(kucoin_data)
 
     df_list = [mexc_data, kucoin_data]
+    print(get_current_date(), "Data preprocess finished.")
     return df_list
 
 
 def start_detection(df_list):
+    print(get_current_date(), "Detection started.")
     for i in range(len(df_list)):
         df = df_list[i]
         X_test = df.drop(columns=['coin_name'])
@@ -232,7 +246,6 @@ def start_detection(df_list):
             pumped_df['exchange'] = 'mexc'
         else:
             pumped_df['exchange'] = 'kucoin'
-        print(pumped_df[pumped_df['pumped'] == 1])
         pumped_coin_data = []
         for index, row in pumped_df.iterrows():
             find_query = {"coinName": row['coinName']}
@@ -241,15 +254,14 @@ def start_detection(df_list):
                 pumped_coin_data.append(create_pumped_data(row['exchange'], row['coinName']))
 
         if len(pumped_coin_data) > 0:
+            print('Newly added pumped coins:')
+            for item in pumped_coin_data:
+                print(item['coinName'])
             pumped_data_table.insert_many(pumped_coin_data)
+    print(get_current_date(), "Detection finished.")
 
 
-print("Hourly script started.")
 # start_hourly_data_fetch(get_current_hour_date(), 1)
-print("Data update finished.")
 db_df = fetch_data_from_db(crypto_data_table)
-print("Data fetching from db finished.")
 processed_df_list = preprocess_db_data(db_df)
-print("Preprocessing finished.")
 start_detection(processed_df_list)
-print("Script finished.")
