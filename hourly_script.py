@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-
 import joblib
 import numpy as np
 from pymongo.mongo_client import MongoClient
@@ -222,7 +221,8 @@ def start_detection(df_list):
     for i in range(len(df_list)):
         df = df_list[i]
         X_test = df.drop(columns=['coin_name'])
-        model = joblib.load('xgb_model.pkl')
+        model_path = os.path.join(script_dir, 'xgb_model.pkl')
+        model = joblib.load(model_path)
         predictions = model.predict(X_test)
 
         result_df = pd.DataFrame({'pumped': predictions, 'coinName': df['coin_name'].values})
@@ -234,7 +234,6 @@ def start_detection(df_list):
             pumped_df['exchange'] = 'kucoin'
         print(pumped_df[pumped_df['pumped'] == 1])
         pumped_coin_data = []
-
         for index, row in pumped_df.iterrows():
             find_query = {"coinName": row['coinName']}
             query_result = pumped_data_table.count_documents(find_query)
@@ -246,7 +245,7 @@ def start_detection(df_list):
 
 
 print("Hourly script started.")
-start_hourly_data_fetch(get_current_hour_date(), 1)
+# start_hourly_data_fetch(get_current_hour_date(), 1)
 print("Data update finished.")
 db_df = fetch_data_from_db(crypto_data_table)
 print("Data fetching from db finished.")
