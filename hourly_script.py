@@ -261,7 +261,7 @@ def start_detection(df_list):
     print(get_current_date(), "Detection finished.")
 
 
-# start_hourly_data_fetch(get_current_hour_date(), 1)
+start_hourly_data_fetch(get_current_hour_date(), 1)
 db_df = fetch_data_from_db(crypto_data_table)
 processed_df_list = preprocess_db_data(db_df)
 start_detection(processed_df_list)
