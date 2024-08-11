@@ -43,12 +43,6 @@ def create_pumped_data(exchange, coin_name):
 
 
 # This part of code taken from Josh Kamps and Bennett Kleinberg study and edited
-# -- EXAMPLE INPUT --
-# exchange = 'bittrex'
-# from_date = '2018-04-20 00:00:00'
-# n_candles = 480
-# c_size = '1h'
-# f_path = '../data'
 def pull_hourly_coin_data(exchange, from_date, n_candles, c_size, skip=False):
     count = 1
     msec = 1000
@@ -148,7 +142,7 @@ def clean_data(df):
 
     # Calculate percentage change
     for column in ['High', 'Open', 'Low', 'Close', 'Volume']:
-        df_filtered[column] = df_filtered.groupby('coin_name')[column].pct_change()
+        df_filtered[column] = df_filtered.groupby('coin_name')[column].pct_change(fill_method=None)
 
     # Clean up DataFrame
     df_filtered.drop(columns=['timestamp', 'exchange_name', '_id'], inplace=True, errors='ignore')
@@ -261,7 +255,7 @@ def start_detection(df_list):
     print(get_current_date(), "Detection finished.")
 
 
-start_hourly_data_fetch(get_current_hour_date(), 1)
+# start_hourly_data_fetch(get_current_hour_date(), 1)
 db_df = fetch_data_from_db(crypto_data_table)
 processed_df_list = preprocess_db_data(db_df)
 start_detection(processed_df_list)
