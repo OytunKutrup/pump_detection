@@ -208,10 +208,22 @@ def create_feature_db_data(df):
 
 def preprocess_db_data(df):
     print(get_current_date(), "Data preprocess started.")
+
     df.rename(columns={'coinName': 'coin_name', 'open': 'Open', 'close': 'Close', 'high': 'High', 'low': 'Low',
                        'volume': 'Volume', 'exchange': 'exchange_name'}, inplace=True)
-    mexc_data = df[df['exchange_name'] == 'mexc']
-    kucoin_data = df[df['exchange_name'] == 'kucoin']
+
+    # Filter the results where 'High' is at least 3x 'Low' and volume with atleast 10000$
+    max_volume_per_coin = df.loc[df.groupby('coin_name')['Volume'].idxmax()]
+    max_volume_per_coin['Mean_High_Low'] = (max_volume_per_coin['High'] + max_volume_per_coin['Low']) / 2
+    max_volume_per_coin['High_atleast_3x_Low'] = max_volume_per_coin['High'] >= 3 * max_volume_per_coin['Low']
+    max_volume_per_coin['USDT_Volume'] = max_volume_per_coin['Volume'] * max_volume_per_coin['Mean_High_Low']
+    filtered_results = max_volume_per_coin[max_volume_per_coin['High_atleast_3x_Low']]
+    filtered_results = filtered_results[filtered_results['USDT_Volume'] > 10000]
+    pairs_to_filter = filtered_results[['coin_name', 'exchange_name']]
+
+    filtered_original_df = pd.merge(df, pairs_to_filter, on=['coin_name', 'exchange_name'], how='inner')
+    mexc_data = filtered_original_df[filtered_original_df['exchange_name'] == 'mexc']
+    kucoin_data = filtered_original_df[filtered_original_df['exchange_name'] == 'kucoin']
 
     mexc_data = clean_data(mexc_data)
     kucoin_data = clean_data(kucoin_data)
