@@ -1,0 +1,228 @@
+body {
+  text-align: center;
+  background: rgb(67,137,162);
+  background: linear-gradient(180deg, rgba(67,137,162,1) 0%, rgba(92,37,141,1) 100%);
+  justify-content: center;
+  display: inline-block;
+  min-height: 100vh;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  text-decoration: none;
+  overflow: auto;
+}
+
+.main-form{
+  height: 89vh;
+  width: 100%;
+  display: inline-block;
+}
+
+p {
+  font-family: "josefin sans", Arial, sans-serif;
+  font-size: 1.5vw;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.8);
+  -webkit-text-stroke: 3px transparent;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px #000;
+}
+
+h2 {
+  color: #CD51AE;
+  font-size: 3vw;
+  text-align: center;
+  font-family: Trebuchet MS;
+  margin-bottom: 1.5%;
+}
+
+h3{
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.7);
+  -webkit-text-stroke: 3px transparent;
+  text-align: center;
+  font-size: 1.5vw;
+  margin-right: 15%;
+  margin-left: 15%;
+  font-family: Trebuchet MS;
+  text-align: center;
+  text-justify: inter-word;
+}
+
+h4{
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.7);
+  -webkit-text-stroke: 3px transparent;
+  font-size: 1.2vw;
+  text-align: center;
+  margin-top: 2%;
+  margin-right: 3%;
+  margin-left: 3%;
+  font-family: Trebuchet MS;
+}
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 60vh;
+    gap: 20px; /* Adjusted gap for better responsiveness */
+    align-items: center; /* Center items horizontally */
+    padding: 20px; /* Added padding for better spacing on smaller screens */
+}
+
+.chart-wrapper {
+    width: 75%; /* Full width */
+    max-width: 75%; /* Adjust maximum width as necessary */
+    height: 60vh;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+
+.chart {
+    width: 100%;
+    height: 60vh !important;  /* Ensures the chart fills the container */
+    padding-bottom: 0; /* Remove the aspect ratio padding */
+    position: relative;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#homepage {
+  color: #A8CBF0;
+  font-weight: bold;
+  font-size: 5.6vw;
+  text-decoration: none;
+  text-transform: uppercase;
+  overflow: hidden;
+}
+
+.homepage-link {
+  margin: 50px 30px 70px 30px;
+}
+
+
+.footer-div {
+  bottom: 0;
+  width: 100%;
+  margin-top: 7vh;
+}
+
+#footer {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height: 4vh;
+  background: #69278D;
+}
+
+#footer-text {
+  font-size: 0.8vw;
+  position: relative;
+  margin-right: 2%;
+}
+
+
+.fa-envelope:before {
+  color:rgb(255, 255, 255, 0.8);
+}
+
+.loader-wrapper {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgb(81,79,150);
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  position: relative;
+  border: 4px solid #Fff;
+  animation: loader 2s infinite ease;
+}
+
+.loader-inner {
+  vertical-align: top;
+  display: inline-block;
+  width: 100%;
+  background-color: #fff;
+  animation: loader-inner 2s infinite ease-in;
+}
+
+@keyframes loader {
+  0% { transform: rotate(0deg);}
+  25% { transform: rotate(180deg);}
+  50% { transform: rotate(180deg);}
+  75% { transform: rotate(360deg);}
+  100% { transform: rotate(360deg);}
+}
+
+@keyframes loader-inner {
+  0% { height: 0%;}
+  25% { height: 0%;}
+  50% { height: 100%;}
+  75% { height: 100%;}
+  100% { height: 0%;}
+}
+
+
+@media only screen and (max-width:800px){
+  .main-form{
+    height: 85.8vh;
+  }
+
+  #homepage {
+    font-size: 48px;
+  }
+
+  p{
+    font-size: 12.5px;
+  }
+  #footer-text{
+    font-size: 12px;
+    margin-right: 8%;
+  }
+
+  h2{
+    font-size: 35px;
+  }
+
+  h3{
+    font-size: 17px;
+    margin: 5% 8% 5% 8%;
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
+  h4{
+    font-size: 16px;
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
+  .footer-div {
+    margin-top: 65px;
+  }
+  #footer {
+    height: 40px;
+  }
+
+  .mail-link{
+    margin-right: 4%;
+  }
+}
