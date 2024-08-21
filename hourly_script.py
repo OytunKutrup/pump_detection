@@ -7,6 +7,7 @@ import configparser
 import ccxt
 import time
 import pandas as pd
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 config = configparser.ConfigParser()
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -111,8 +112,28 @@ def start_hourly_data_fetch(from_date, c_size):
 
 def fetch_data_from_db(crypto_table):
     print(get_current_date(), "Data fetch started.")
-    data = crypto_table.find()
-    df = pd.DataFrame(list(data))
+
+    def fetch_data_batch(skip, batch_size):
+        return list(crypto_table.find({}).skip(skip).limit(batch_size))
+
+    def parallel_fetch_data(total_docs, batch_size=1000, max_workers=4):
+        all_data = []
+        skip_values = range(0, total_docs, batch_size)
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {executor.submit(fetch_data_batch, skip, batch_size): skip for skip in skip_values}
+
+            for future in as_completed(futures):
+                data_batch = future.result()
+                all_data.extend(data_batch)
+                print(f"Fetched {futures[future] + batch_size} documents")
+
+        return all_data
+
+    total_docs = crypto_table.count_documents({})
+    all_data = parallel_fetch_data(total_docs, batch_size=1000, max_workers=4)
+    df = pd.DataFrame(all_data)
+
     print(get_current_date(), "Data fetch finished.")
     return df
 
@@ -264,6 +285,7 @@ def start_detection(df_list):
             for item in pumped_coin_data:
                 print(item['coinName'])
             pumped_data_table.insert_many(pumped_coin_data)
+    client.close()
     print(get_current_date(), "Detection finished.")
 
 
