@@ -66,6 +66,7 @@ h4{
     gap: 20px; /* Adjusted gap for better responsiveness */
     align-items: center; /* Center items horizontally */
     padding: 20px; /* Added padding for better spacing on smaller screens */
+    margin-bottom: 7vh;
 }
 
 .chart-wrapper {
@@ -112,12 +113,14 @@ h4{
 
 .footer-div {
   bottom: 0;
+  position: fixed;
   width: 100%;
   margin-top: 7vh;
 }
 
 #footer {
   display:flex;
+  bottom: 0;
   justify-content:center;
   align-items:center;
   height: 4vh;
@@ -130,6 +133,89 @@ h4{
   margin-right: 2%;
 }
 
+
+a input {
+  font-family: Trebuchet MS;
+  cursor: pointer;
+  position: relative;
+  background: none;
+  border: none;
+  text-decoration: none;
+  text-transform: uppercase;
+  left: -50px;
+  width: 350px;
+  font-size: 16px;
+  font-weight: bold;
+  height: 50px;
+  color: #ededed;
+  letter-spacing: 3px;
+  z-index: 1;
+}
+
+.input-button{
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.liq-class {
+  position: relative;
+  top: %80;
+  padding: 0px 50px;
+  display: block;
+  text-transform: uppercase;
+  width: 350px;
+  overflow: hidden;
+  margin-top: 2%;
+  border-radius: 40px;
+}
+
+#button2{
+  letter-spacing: 2px;
+}
+
+#liq2 {
+  background: #367d8e;
+}
+
+a .liquid {
+  position: absolute;
+  top: -90px;
+  left: 0;
+  width: 350px;
+  height: 200px;
+  background: #a4418b;
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, .5);
+  transition: .5s;
+}
+
+a .liquid::after,
+a .liquid::before {
+  content: '';
+  width: 150%;
+  height: 250%;
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translate(-50%, -75%);
+  background: #000;
+}
+
+a .liquid::before {
+  border-radius: 45%;
+  background: rgba(20, 20, 20, 1);
+  animation: animate 5s linear infinite;
+}
+
+a .liquid::after {
+  border-radius: 40%;
+  background: rgba(20, 20, 20, .5);
+  animation: animate 10s linear infinite;
+}
+
+a:hover .liquid{
+  top: -130px;
+}
 
 .fa-envelope:before {
   color:rgb(255, 255, 255, 0.8);

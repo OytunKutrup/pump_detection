@@ -1,1 +1,1 @@
-worker: python pumpdetection/hourly_script.py
+web: gunicorn website:app

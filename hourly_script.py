@@ -126,7 +126,6 @@ def fetch_data_from_db(crypto_table):
             for future in as_completed(futures):
                 data_batch = future.result()
                 all_data.extend(data_batch)
-                print(f"Fetched {futures[future] + batch_size} documents")
 
         return all_data
 

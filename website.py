@@ -2,7 +2,7 @@ import configparser
 import os
 
 from flask import Flask, render_template, request, flash, session, redirect, url_for
-from Backend import *
+from backend import *
 from datetime import timedelta
 
 app = Flask(__name__)
@@ -25,14 +25,16 @@ def get_pumped_coin_data():
 @app.route("/home", methods=["POST", "GET"])
 @app.route("/", methods=["POST", "GET"])
 def home():
+    return render_template("home.html")
+
+
+@app.route("/graphs", methods=["POST", "GET"])
+def about():
     if request.method == 'POST':
-        movie_input = request.form["movie_input"]
-        session["user"] = [movie_input, 0]
-        session.permanent = True
-        return redirect(url_for("recommendation"))
-    return render_template("home.html", coin_data=get_pumped_coin_data())
+        return redirect(url_for("home"))
+    return render_template("graphs.html", coin_data=get_pumped_coin_data())
 
 
 if __name__ == "__main__":
-    # app.run(debug=True)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)
+    # app.run(host='0.0.0.0', port=5000, debug=True)
