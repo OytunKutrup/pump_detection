@@ -116,7 +116,7 @@ def fetch_data_from_db(crypto_table):
     def fetch_data_batch(skip, batch_size):
         return list(crypto_table.find({}).skip(skip).limit(batch_size))
 
-    def parallel_fetch_data(total_docs, batch_size=1000, max_workers=4):
+    def parallel_fetch_data(total_docs, batch_size=2000, max_workers=4):
         all_data = []
         skip_values = range(0, total_docs, batch_size)
 
@@ -232,15 +232,14 @@ def preprocess_db_data(df):
     df.rename(columns={'coinName': 'coin_name', 'open': 'Open', 'close': 'Close', 'high': 'High', 'low': 'Low',
                        'volume': 'Volume', 'exchange': 'exchange_name'}, inplace=True)
 
-    # Filter the results where 'High' is at least 3x 'Low' and volume with atleast 10000$
+    # Filter the results where 'High' is at least 2x 'Low' and volume with atleast 10000$
     max_volume_per_coin = df.loc[df.groupby('coin_name')['Volume'].idxmax()]
     max_volume_per_coin['Mean_High_Low'] = (max_volume_per_coin['High'] + max_volume_per_coin['Low']) / 2
-    max_volume_per_coin['High_atleast_3x_Low'] = max_volume_per_coin['High'] >= 3 * max_volume_per_coin['Low']
+    max_volume_per_coin['High_atleast_2x_Low'] = max_volume_per_coin['High'] >= 2 * max_volume_per_coin['Low']
     max_volume_per_coin['USDT_Volume'] = max_volume_per_coin['Volume'] * max_volume_per_coin['Mean_High_Low']
-    filtered_results = max_volume_per_coin[max_volume_per_coin['High_atleast_3x_Low']]
+    filtered_results = max_volume_per_coin[max_volume_per_coin['High_atleast_2x_Low']]
     filtered_results = filtered_results[filtered_results['USDT_Volume'] > 10000]
     pairs_to_filter = filtered_results[['coin_name', 'exchange_name']]
-
     filtered_original_df = pd.merge(df, pairs_to_filter, on=['coin_name', 'exchange_name'], how='inner')
     mexc_data = filtered_original_df[filtered_original_df['exchange_name'] == 'mexc']
     kucoin_data = filtered_original_df[filtered_original_df['exchange_name'] == 'kucoin']
