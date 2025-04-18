@@ -116,21 +116,19 @@ def fetch_data_from_db(crypto_table):
     def fetch_data_batch(skip, batch_size):
         return list(crypto_table.find({}).skip(skip).limit(batch_size))
 
-    def parallel_fetch_data(total_docs, batch_size=2000, max_workers=4):
+    def parallel_fetch_data(total_docs, batch_size, max_workers):
         all_data = []
         skip_values = range(0, total_docs, batch_size)
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = {executor.submit(fetch_data_batch, skip, batch_size): skip for skip in skip_values}
-
             for future in as_completed(futures):
                 data_batch = future.result()
                 all_data.extend(data_batch)
-
         return all_data
 
     total_docs = crypto_table.count_documents({})
-    all_data = parallel_fetch_data(total_docs, batch_size=1000, max_workers=4)
+    all_data = parallel_fetch_data(total_docs, batch_size=2000, max_workers=4)
     df = pd.DataFrame(all_data)
 
     print(get_current_date(), "Data fetch finished.")
@@ -238,7 +236,7 @@ def preprocess_db_data(df):
     max_volume_per_coin['High_atleast_2x_Low'] = max_volume_per_coin['High'] >= 2 * max_volume_per_coin['Low']
     max_volume_per_coin['USDT_Volume'] = max_volume_per_coin['Volume'] * max_volume_per_coin['Mean_High_Low']
     filtered_results = max_volume_per_coin[max_volume_per_coin['High_atleast_2x_Low']]
-    filtered_results = filtered_results[filtered_results['USDT_Volume'] > 10000]
+    # filtered_results = filtered_results[filtered_results['USDT_Volume'] > 10000]
     pairs_to_filter = filtered_results[['coin_name', 'exchange_name']]
     filtered_original_df = pd.merge(df, pairs_to_filter, on=['coin_name', 'exchange_name'], how='inner')
     mexc_data = filtered_original_df[filtered_original_df['exchange_name'] == 'mexc']
@@ -282,12 +280,12 @@ def start_detection(df_list):
             print('Newly added pumped coins:')
             for item in pumped_coin_data:
                 print(item['coinName'])
-            pumped_data_table.insert_many(pumped_coin_data)
+            # pumped_data_table.insert_many(pumped_coin_data)
     client.close()
     print(get_current_date(), "Detection finished.")
 
 
-start_hourly_data_fetch(get_current_hour_date(), 1)
+# start_hourly_data_fetch(get_current_hour_date(), 1)
 db_df = fetch_data_from_db(crypto_data_table)
 processed_df_list = preprocess_db_data(db_df)
 start_detection(processed_df_list)
